@@ -6,7 +6,7 @@
  * analysis on it
  */
 
-use reqwest;
+//use reqwest;
 
 
 fn main() {
@@ -21,9 +21,4 @@ fn main() {
 
 // Get the data from an API
 async fn get_data() {
-    let body = client
-        .get("https://httpbin.org/ip")
-        .send()
-        .await?;
-    println!("body = {:?}", body);
 }
