@@ -11,6 +11,11 @@
 use std::collections::HashMap;
 
 extern crate csv;
+use std::error::Error;
+use std::ffi::OsString;
+use std::fs::File;
+use std::process;
+
 use std::io;
 use reqwest;
 use dotenv::dotenv;
@@ -22,9 +27,15 @@ fn main() {
     print!("#                  by David Doria                    #\n");
     print!("######################################################\n");
     print!("\n");
+    
+    // Get the file
+    let file_path = r#"src\Top-Apps-in-Google-Play.csv"#;
+    let file = File::open(file_path);
+
+
 
     // Reads data from a file
-    let mut reader = csv::Reader::from_reader(io::stdin());
+    let mut reader = csv::Reader::from_reader(file);
 
     for result in reader.records() {
         let record = result.expect("a csv record");
