@@ -10,8 +10,11 @@
 
 use std::collections::HashMap;
 
+extern crate csv;
+use std::io;
 use reqwest;
-
+use dotenv::dotenv;
+use std::env;
 
 fn main() {
     print!("######################################################\n");
@@ -20,17 +23,40 @@ fn main() {
     print!("######################################################\n");
     print!("\n");
 
-    get_data();
+    // Reads data from a file
+    let mut reader = csv::Reader::from_reader(io::stdin());
+
+    for result in reader.records() {
+        let record = result.expect("a csv record");
+        println!("{:?}", record);
+    }
+    //get_data();
 }
 
 // Get the data from an API
-#[tokio::main]
+#[tokio::main] // This method uses the main method of the tokio crate
 // Returns either a result, or a Box-wrapped error
 async fn get_data() -> Result<(), Box<dyn std::error::Error>> {
-    let resp = reqwest::get("https://httpbin.org/ip")
+    // Get api key from my .env file
+    dotenv().ok(); 
+    let api_key = env::var("API_KEY")?;
+    
+
+    // Set up the URL for the API Call
+    let url = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
+    let headers = [("Content-type", "application/json"), ("registrationKey", &api_key), ("startyear", "2021"), ("endyear", "2021"), ("seriesid", "WMU00140201020000001300002500"), ("catalog","true")];
+
+    // Make the API Call
+    let client = reqwest::Client::new();
+    let response = client
+        .post(url)
+        .form(&headers)
+        .send()
+        .await?;
+    /*let resp = reqwest::get("https://httpbin.org/ip")
         .await?
         .json::<HashMap<String, String>>()
-        .await?;
-    println!("{:#?}", resp);
+        .await?;*/
+    println!("{:#?}", response);
     Ok(())
 }
