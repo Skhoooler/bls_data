@@ -4,9 +4,13 @@
  * 
  * Retrieves data from the BLS api and performs statistical
  * analysis on it
+ * 
+ * Rust Documentation: "rustup docs --book"
  */
 
-//use reqwest;
+use std::collections::HashMap;
+
+use reqwest;
 
 
 fn main() {
@@ -20,5 +24,13 @@ fn main() {
 }
 
 // Get the data from an API
-async fn get_data() {
+#[tokio::main]
+// Returns either a result, or a Box-wrapped error
+async fn get_data() -> Result<(), Box<dyn std::error::Error>> {
+    let resp = reqwest::get("https://httpbin.org/ip")
+        .await?
+        .json::<HashMap<String, String>>()
+        .await?;
+    println!("{:#?}", resp);
+    Ok(())
 }
