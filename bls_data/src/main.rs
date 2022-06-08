@@ -36,6 +36,10 @@ fn main() {
 
     // Set up data recepticles
     let mut top_ten: Vec<String> = Vec::new();
+    let mut in_app_purchases = 0;
+    let mut ad_supported = 0;
+    let mut social_apps: Vec<String> = Vec::new();
+    let mut games: Vec<String> = Vec::new();
 
     // Iterate through the records to gather data
     let mut i = 0;
@@ -45,6 +49,25 @@ fn main() {
             top_ten.push(record[1].to_string());
         }
 
+        // How many in app purchases
+        if record[9] == String::from("True") {
+            in_app_purchases = in_app_purchases + 1;
+        }
+
+        // How many ad-supported apps
+        if record[8] == String::from("True") {
+            ad_supported = ad_supported + 1;
+        }
+
+        // How many are social media
+        if record[3] == String::from("Social") {
+            social_apps.push(record[1].to_string());
+        }
+
+        // How many are games
+        if record[3] == String::from("Arcade") || record[3] == String::from("Casual") {
+            games.push(record[1].to_string());
+        }
 
         i = i + 1;
     }
@@ -56,7 +79,41 @@ fn main() {
     for app in top_ten {
         println!("{:?}", app);
     }
-    
+    println!();
+
+    print!("######################################################\n");
+    print!("#                  In app purchases                  #\n");
+    print!("######################################################\n");
+    println!("{} out of the top {} apps on the Google Play store include in-app purchases",
+        in_app_purchases, i);
+    println!();
+
+    print!("######################################################\n");
+    print!("#                 Ad Supported Apps                  #\n");
+    print!("######################################################\n");
+    println!("{} out of the top {} apps on the Google Play store are supported by ads",
+        ad_supported, i);
+
+    print!("######################################################\n");
+    print!("#                Top Social Media Apps               #\n");
+    print!("######################################################\n");
+    println!("The following {} out of the top {} apps on the Google Play store are social media apps",
+    social_apps.len(), i);
+    for app in social_apps {
+        println!("{:?}", app);
+    }
+    println!();
+
+    print!("######################################################\n");
+    print!("#                      Top Games                     #\n");
+    print!("######################################################\n");
+    println!("The following {} out of the top {} apps on the Google Play store are games",
+    games.len(), i);
+    for app in games {
+        println!("{:?}", app);
+    }
+    println!();
+
 }
 
 fn read_from_raw_data(data :&str) -> Vec<StringRecord> {
