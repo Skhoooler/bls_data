@@ -8,66 +8,69 @@
  * Rust Documentation: "rustup docs --book"
  */
 
-use std::collections::HashMap;
+use std::{fs::File, io::Read};
 
-extern crate csv;
-use std::error::Error;
-use std::ffi::OsString;
-use std::fs::File;
-use std::process;
+use csv::{StringRecord};
 
-use std::io;
-use reqwest;
-use dotenv::dotenv;
-use std::env;
 
 fn main() {
     print!("######################################################\n");
-    print!("#  Bureau of Labor Statistics Data Analysis Program  #\n");
+    print!("#              Data Analysis Program                 #\n");
     print!("#                  by David Doria                    #\n");
     print!("######################################################\n");
     print!("\n");
     
+    // Get the file path
+    let file_path = "src/Top-Apps-in-Google-Play.csv";
+
     // Get the file
-    let file_path = r#"src\Top-Apps-in-Google-Play.csv"#;
-    let file = File::open(file_path);
+    let mut file = File::open(file_path).expect("File not found");
+
+    // Turn the data into a string
+    let mut raw_data = String::new();
+
+    file.read_to_string(&mut raw_data).expect("Error while reading file");
+    
+    // Serialize the raw data
+    let data = read_from_raw_data(&raw_data);
+
+    // Set up data recepticles
+    let mut top_ten: Vec<String> = Vec::new();
+
+    // Iterate through the records to gather data
+    let mut i = 0;
+    for record in data {
+        // Gather top ten apps
+        if i < 10 {
+            top_ten.push(record[1].to_string());
+        }
 
 
-
-    // Reads data from a file
-    let mut reader = csv::Reader::from_reader(file);
-
-    for result in reader.records() {
-        let record = result.expect("a csv record");
-        println!("{:?}", record);
+        i = i + 1;
     }
-    //get_data();
+
+
+    print!("######################################################\n");
+    print!("#          Top 10 Apps in Google Play Store          #\n");
+    print!("######################################################\n");
+    for app in top_ten {
+        println!("{:?}", app);
+    }
+    
 }
 
-// Get the data from an API
-#[tokio::main] // This method uses the main method of the tokio crate
-// Returns either a result, or a Box-wrapped error
-async fn get_data() -> Result<(), Box<dyn std::error::Error>> {
-    // Get api key from my .env file
-    dotenv().ok(); 
-    let api_key = env::var("API_KEY")?;
-    
+fn read_from_raw_data(data :&str) -> Vec<StringRecord> {
+    // Create a new csv reader from path
+    let mut reader = csv::Reader::from_reader(data.as_bytes());
 
-    // Set up the URL for the API Call
-    let url = "https://api.bls.gov/publicAPI/v2/timeseries/data/";
-    let headers = [("Content-type", "application/json"), ("registrationKey", &api_key), ("startyear", "2021"), ("endyear", "2021"), ("seriesid", "WMU00140201020000001300002500"), ("catalog","true")];
+    // Return a vector of StringRecords
+    let mut data: Vec<StringRecord> = Vec::new();
+    // reader.records() returns an interator for the records it got from the csv
+    for result in reader.records() {
+        let record = result.unwrap();
+        
+        data.push(record);
+    }
 
-    // Make the API Call
-    let client = reqwest::Client::new();
-    let response = client
-        .post(url)
-        .form(&headers)
-        .send()
-        .await?;
-    /*let resp = reqwest::get("https://httpbin.org/ip")
-        .await?
-        .json::<HashMap<String, String>>()
-        .await?;*/
-    println!("{:#?}", response);
-    Ok(())
+    return data;
 }
