@@ -12,8 +12,6 @@ This program was written in Rust using VSCode. I used the CSV crate to deseriali
 
 # Useful Websites
 
-{Make a list of websites that you found helpful in this project}
-
 * [CSV Processing](https://rust-lang-nursery.github.io/rust-cookbook/encoding/csv.html)
 * [How to Read File as a String](https://linuxhint.com/read-a-file-in-rust/#:~:text=Read%20File%20as%20a%20String,%3A%3Afs%3A%3Aread_to_string%20method.&text=The%20previous%20code%20imports%20the%20File%20struct%20and%20the%20prelude%20module)
 * [How to read data from a result](https://stackoverflow.com/questions/63859927/how-to-get-a-value-from-a-result)
